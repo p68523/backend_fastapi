@@ -1,4 +1,19 @@
 services:
+  db:
+    image: mysql:8.0
+    container_name: test_mysql_container
+    environment:
+      MYSQL_DATABASE: test
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: root_password
+    ports:
+      - "3307:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - test_network
+
   backend:
     build:
       context: ./backend
@@ -9,3 +24,15 @@ services:
       - "8000:8000"
     env_file:
       - ./backend/.env
+    depends_on:
+      - db
+    networks:
+      - test_network
+
+volumes:
+  db_data:
+  redis_data:
+
+networks:
+  test_network:
+    driver: bridge
